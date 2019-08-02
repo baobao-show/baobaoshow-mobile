@@ -35,6 +35,8 @@ class AblumPage extends StatelessWidget {
   }
 }
 
+
+
 class JsonView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -44,31 +46,65 @@ class JsonView extends StatefulWidget {
 
 class _JsonViewState extends State<JsonView>
     with AutomaticKeepAliveClientMixin {
-  int _currentPage = 0;
-  int _pageSize = 3;
-
+  AblumListViewModel videoListViewModel = AblumListViewModel();
   ScrollController _scrollController =
-      new ScrollController(); // 初始化滚动监听器，加载更多使用
-
-  List<AblumModel> temp = [];
-  Future<List<AblumModel>> listAblum;
+  new ScrollController(); // 初始化滚动监听器，加载更多使用
 
   @override
   bool get wantKeepAlive => true; //要点2
 
   @override
+  Widget build(BuildContext context) {
+    super.build(context); //要点3
+
+    return new StreamBuilder<List<AblumModel>>(
+
+      stream: videoListViewModel.outStoryList,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+
+        List stories = snapshot.data;
+
+        if (stories != null) {
+          return RefreshIndicator(
+              onRefresh: () {
+                return videoListViewModel.refreshStoryList();
+              },
+              child: new ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: _scrollController,
+                itemCount: (stories?.length ?? 0) + 1,
+                itemBuilder: (BuildContext context, int index) {
+
+                  if (index >= (stories?.length ?? 0)) {
+                    //storyListViewModel.loadNextPage();
+                    return WaitingCard();
+                  }
+
+                  return new AblumCard(ablum: stories[index]);
+                },
+              ));
+        }
+        else{
+          return WaitingCard();
+        }
+
+
+      },
+    );
+  }
+
+  @override
   void initState() {
-    setState(() {
-      listAblum = _getFristData();
-    });
+
+
+    videoListViewModel.fetchStoryList();
 
     _scrollController.addListener(() {
       // 如果滑动到底部
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         print("下拉到底了");
-
-        _getMoreData();
+        videoListViewModel.loadNextPage();
       }
     });
 
@@ -77,78 +113,9 @@ class _JsonViewState extends State<JsonView>
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context); //要点3
-
-    return new RefreshIndicator(
-      child: new FutureBuilder(
-        future: listAblum,
-        builder: _buildFuture,
-      ),
-      onRefresh: _refresh,
-    );
-  }
-
-  ///snapshot就是_calculation在时间轴上执行过程的状态快照
-  Widget _buildFuture(BuildContext context, AsyncSnapshot snapshot) {
-    switch (snapshot.connectionState) {
-      case ConnectionState.none:
-      case ConnectionState.waiting:
-
-        //return  CircularProgressIndicator();
-        return WaitingCard();
-
-      case ConnectionState.done:
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          if (snapshot.hasData) {
-            return new ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              controller: _scrollController,
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return new AblumCard(ablum: snapshot.data[index]);
-              },
-            );
-          }
-        }
-        break;
-      default:
-        return WaitingCard();
-    }
-  }
-
-  Future<List<AblumModel>> _getMoreData() async {
-    _currentPage = _currentPage + 1;
-    return AblumService.loadJson(_currentPage, _pageSize).then((value) {
-
-      setState(() {
-        temp.addAll(value);
-      });
-
-      return temp;
-    });
-  }
-
-  Future<List<AblumModel>> _getFristData() async {
-    _currentPage = 0;
-    return AblumService.loadJson(_currentPage, _pageSize).then((value) {
-      temp.addAll(value);
-      return temp;
-    });
-  }
-
-  Future _refresh() async {
-    temp.clear();
-
-    setState(() {
-      listAblum = _getFristData();
-    });
+    _scrollController.dispose();
+    videoListViewModel.dispose();
   }
 }
+

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 import 'package:baobao/service/video.dart';
 import 'package:baobao/model/video.dart';
@@ -41,64 +42,77 @@ class JsonView extends StatefulWidget {
   }
 }
 
-class _JsonViewState extends State<JsonView>   with AutomaticKeepAliveClientMixin {
-  Future<VideoListModel> ablumList;
+class _JsonViewState extends State<JsonView>
+    with AutomaticKeepAliveClientMixin {
+  VideoListViewModel videoListViewModel = VideoListViewModel();
+  ScrollController _scrollController =
+      new ScrollController(); // 初始化滚动监听器，加载更多使用
 
   @override
-  bool get wantKeepAlive => true;//要点2
-
+  bool get wantKeepAlive => true; //要点2
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); //要点3
 
-    super.build(context);//要点3
+    return new StreamBuilder<List<VideoModel>>(
 
-    return new FutureBuilder(
-      future: ablumList,
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-          case ConnectionState.waiting:
-            return  WaitingCard();
-          case ConnectionState.done:
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              if (snapshot.hasData) {
+      stream: videoListViewModel.outStoryList,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
 
+        List stories = snapshot.data;
 
-                return new ListView.builder(
-                  itemCount: snapshot.data.items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    print(snapshot.data.items[index].name);
+        if (stories != null) {
+          return RefreshIndicator(
+              onRefresh: () {
+                return videoListViewModel.refreshStoryList();
+              },
+              child: new ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                controller: _scrollController,
+                itemCount: (stories?.length ?? 0) + 1,
+                itemBuilder: (BuildContext context, int index) {
 
-                    return new VideoCard(video: snapshot.data.items[index]);
+                  if (index >= (stories?.length ?? 0)) {
+                    //storyListViewModel.loadNextPage();
+                    return WaitingCard();
+                  }
 
-                  },
-                );
-              }
-            }
-            break;
-          default:
-            new CircularProgressIndicator();
+                  return new VideoCard(video: stories[index]);
+                },
+              ));
         }
+        else{
+          return WaitingCard();
+        }
+
+
       },
     );
-  }
-
-  Future<VideoListModel> _getData() {
-
-     return  VideoService.loadJson();
-
   }
 
   @override
   void initState() {
 
-    setState(() {
-      ablumList = _getData();
+
+    videoListViewModel.fetchStoryList();
+
+    _scrollController.addListener(() {
+      // 如果滑动到底部
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        print("下拉到底了");
+        videoListViewModel.loadNextPage();
+      }
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+    videoListViewModel.dispose();
   }
 }
