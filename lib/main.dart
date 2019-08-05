@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      //showPerformanceOverlay: true, // 开启
       home: MainPage(),
       theme: ThemeData(primaryColor: Colors.lightBlue),
     );

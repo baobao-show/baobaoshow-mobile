@@ -33,8 +33,7 @@ class _MainPage extends State<MainPage> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return  Scaffold(
       body: new PageView(
         children: bodyList,
         controller: pageController,
@@ -46,7 +45,7 @@ class _MainPage extends State<MainPage> with SingleTickerProviderStateMixin {
         onTap: onTap,
         currentIndex: page,
       ),
-    ));
+    );
   }
 
   @override
