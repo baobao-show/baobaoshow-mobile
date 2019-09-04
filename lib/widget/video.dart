@@ -51,6 +51,7 @@ class VideoCard extends StatelessWidget {
             ),
           ),
           Container(
+            padding: EdgeInsets.only(bottom: 5),
             child: new ChewiePlayer(url:video.url),
           )
         ],

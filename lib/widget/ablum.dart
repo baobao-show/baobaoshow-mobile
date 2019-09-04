@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:baobao/model/ablum.dart';
+import 'package:share/share.dart';
 
 class AblumCard extends StatelessWidget {
   final AblumModel ablum;
@@ -28,16 +29,50 @@ class AblumCard extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(left: 20),
                   width: 250,
-                  child: Text(
-                    ablum.name,
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,//
+                    //在水平方向上，这个Row占据的大小
+                    mainAxisSize: MainAxisSize.max,//默认值  尽可能多占据
+                    children: <Widget>[
+                      Expanded(
+                          child: Row(
+                        children: <Widget>[
+                          Text('作者：',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                              )),
+                          Text('HuYounger',
+                              style: TextStyle(
+                                color: Colors.redAccent[400],
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                              )),
+                        ],
+                      )),
+                      //收藏图标
+                      Padding(
+                        child: Icon(Icons.favorite, color: Colors.red),
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                      //分享图标
+                      new IconButton(
+                        icon: new Icon(Icons.share, color: Colors.black),
+                        onPressed: () {
+                          Share.share(
+                              'check out my website https://example.com');
+                        },
+                      )
+
+
+                    ],
                   ),
                 )
               ],
             ),
           ),
+          Container(child: new Divider()),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20),
             margin: EdgeInsets.symmetric(vertical: 10),
@@ -49,6 +84,7 @@ class AblumCard extends StatelessWidget {
             ),
           ),
           Container(
+            padding: EdgeInsets.only(bottom: 5),
             color: Colors.black12,
             child: CachedNetworkImage(
               placeholder: (context, url) => new CircularProgressIndicator(),
@@ -56,7 +92,6 @@ class AblumCard extends StatelessWidget {
               imageUrl: ablum.cover,
             ),
           ),
-          Container(child: new Divider())
         ],
       ),
     );

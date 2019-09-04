@@ -27,3 +27,32 @@ class WaitingCard extends StatelessWidget {
     );
   }
 }
+
+
+
+class FinishCard extends StatelessWidget {
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new Stack(
+      children: <Widget>[
+        new Padding(
+          padding: new EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 35.0),
+          child: new Center(
+            child: SpinKitFadingCircle(
+              color: Colors.blueAccent,
+              size: 30.0,
+            ),
+          ),
+        ),
+        new Padding(
+          padding: new EdgeInsets.fromLTRB(0.0, 35.0, 0.0, 0.0),
+          child: new Center(
+            child: new Text('加载数据完毕，再无数据！'),
+          ),
+        ),
+      ],
+    );
+  }
+}

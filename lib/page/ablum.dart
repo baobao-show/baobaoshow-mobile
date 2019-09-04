@@ -4,7 +4,7 @@ import 'package:async/src/async_memoizer.dart';
 import 'package:baobao/service/ablum.dart';
 import 'package:baobao/model/ablum.dart';
 import 'package:baobao/widget/ablum.dart';
-import 'package:baobao/widget/camera.dart';
+import 'package:baobao/widget/ablum_camera.dart';
 import 'package:baobao/widget/waiting.dart';
 
 class AblumPage extends StatelessWidget {
@@ -12,16 +12,20 @@ class AblumPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
+        centerTitle: true,
         leading: InkWell(
           onTap: () {
-            // showModalBottomSheet<T>：显示模态质感设计底部面板
-            showModalBottomSheet<Null>(
+            // showModalBottomSheet  半屏
+            // showBottomSheet   全屏
+            //
+            showBottomSheet<Null>(
                 context: context,
                 builder: (BuildContext context) {
                   return new Container(
-                      child: new Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: new PhotoCamera()));
+                      color: Colors.blue,
+                      padding: const EdgeInsets.only(top: 20),
+                      child:
+                           new PhotoCamera());
                 });
           },
           child: Icon(
@@ -85,7 +89,7 @@ class _JsonViewState extends State<JsonView>
               ));
         }
         else{
-          return WaitingCard();
+          return FinishCard();
         }
 
 
@@ -103,7 +107,7 @@ class _JsonViewState extends State<JsonView>
       // 如果滑动到底部
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        print("下拉到底了");
+
         videoListViewModel.loadNextPage();
       }
     });

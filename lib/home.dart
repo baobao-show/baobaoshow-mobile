@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 import 'package:baobao/page/ablum.dart';
 import 'package:baobao/page/video.dart';
@@ -51,6 +53,8 @@ class _MainPage extends State<MainPage> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    //申请APP依赖的权限
+    requestPermission();
     pageController = PageController(initialPage: this.page);
   }
 
@@ -70,4 +74,55 @@ class _MainPage extends State<MainPage> with SingleTickerProviderStateMixin {
       this.page = page;
     });
   }
+
+
+  Future requestPermission() async {
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions =
+    await PermissionHandler().requestPermissions([PermissionGroup.storage]);
+
+    // 申请结果
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.storage);
+
+    if (permission == PermissionStatus.granted) {
+      print("storage权限申请通过");
+    } else {
+      print("storage权限申请通过");
+    }
+
+
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions2 =
+    await PermissionHandler().requestPermissions([PermissionGroup.camera]);
+
+    // 申请结果
+    PermissionStatus permission2 = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.camera);
+
+    if (permission2 == PermissionStatus.granted) {
+      print("camera权限申请通过");
+    } else {
+      print("camera权限申请通过");
+    }
+
+
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions3 =
+    await PermissionHandler().requestPermissions([PermissionGroup.locationAlways]);
+
+    // 申请结果
+    PermissionStatus permission3 = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.locationAlways);
+
+    if (permission3 == PermissionStatus.granted) {
+      print("locationAlways权限申请通过");
+    } else {
+      print("locationAlways权限申请通过");
+    }
+
+
+  }
+
+
 }

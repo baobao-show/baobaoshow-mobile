@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:amap_location/amap_location.dart';
 
-//import 'package:baobao/page/ablum.dart';
-//import 'package:baobao/page/video.dart';
-//import 'package:baobao/page/mine.dart';
 
 
-import 'package:baobao/home.dart';
+import 'package:baobao/intro.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
+void main() {
+
+  AMapLocationClient.setApiKey("fe39ecff3d66d0ce0c9e1453503231c0");
+
+  runApp(new MyApp());
+  if (defaultTargetPlatform == TargetPlatform.android) {
+// 以下两行 设置android状态栏为透明的沉浸。写在组件渲染之后，是为了在渲染后进行set赋值，覆盖状态栏，写在渲染之前MaterialApp组件会覆盖掉这个值。
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+  }
+
+
+}
+
 
 class MyApp extends StatelessWidget {
 
@@ -16,73 +31,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       //showPerformanceOverlay: true, // 开启
-      home: MainPage(),
+      home: IntroPage(),
       theme: ThemeData(primaryColor: Colors.lightBlue),
     );
   }
 }
 
 
-//
-//class ScaffoldPage extends StatefulWidget {
-//  @override
-//  State<StatefulWidget> createState() => new PageState();
-//}
-//
-//class PageState extends State<ScaffoldPage> with SingleTickerProviderStateMixin {
-//
-//
-//  int _currentIndex = 0;
-//  final List<Widget> _children = [AblumPage(), VideoPage(), MinePage()];
-//
-//  final List<BottomNavigationBarItem> _list = <BottomNavigationBarItem>[
-//    BottomNavigationBarItem(
-//      icon: Icon(Icons.photo_library),
-//      title: Text('纪念册'),
-//      //backgroundColor: Colors.orange
-//    ),
-//    BottomNavigationBarItem(
-//      icon: Icon(Icons.live_tv),
-//      title: Text('留声机'),
-//      //backgroundColor: Colors.orange
-//    ),
-//    BottomNavigationBarItem(
-//      icon: Icon(Icons.person),
-//      title: Text('专属地'),
-//      //backgroundColor: Colors.orange
-//    )
-//  ];
-//
-//  @override
-//  void initState() {
-//
-//    super.initState();
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//
-//      bottomNavigationBar: BottomNavigationBar(
-//        type: BottomNavigationBarType.fixed,
-//        onTap: onTabTapped,
-//        currentIndex: _currentIndex,
-//        items: _list,
-//      ),
-//
-//      body: IndexedStack(
-//        index: _currentIndex,
-//        children: _children,
-//      ),
-//    );
-//  }
-//
-//  void onTabTapped(int index) {
-//    setState(() {
-//      _currentIndex = index;
-//    });
-//  }
-//
-//
-//
-//}

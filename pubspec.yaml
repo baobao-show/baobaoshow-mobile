@@ -28,6 +28,8 @@ dependencies:
   dio: ^2.1.13
   connectivity: ^0.4.3+6
 
+  # 引导页
+  intro_views_flutter: '^2.6.0'
 
   # 图片展示
   flutter_staggered_grid_view: ^0.3.0
@@ -37,13 +39,20 @@ dependencies:
 
   # 视频和图片上传
   image_picker: ^0.6.0+17
+  multi_image_picker: ^4.4.1
 
   # 播放器
   video_player: ^0.10.1+6
   chewie: ^0.9.7
 
+  # 分享
+  share: ^0.6.2+1
 
+  # 地理位置
+  amap_location: ^0.2.0
 
+  # 授权管理
+  permission_handler: '^3.2.0'
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +73,11 @@ flutter:
   assets:
     - assets/json/ablum.json
     - assets/json/video.json
+
+    - assets/images/1.jpg
+    - assets/images/2.jpg
+    - assets/images/3.jpg
+    - assets/images/white.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

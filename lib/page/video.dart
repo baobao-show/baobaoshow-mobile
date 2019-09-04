@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:baobao/service/video.dart';
 import 'package:baobao/model/video.dart';
 import 'package:baobao/widget/video.dart';
-import 'package:baobao/widget/camera.dart';
+import 'package:baobao/widget/video_camera.dart';
 import 'package:baobao/widget/waiting.dart';
 
 class VideoPage extends StatelessWidget {
@@ -12,15 +12,16 @@ class VideoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
+        centerTitle: true,
         leading: InkWell(
           onTap: () {
             // showModalBottomSheet<T>：显示模态质感设计底部面板
-            showModalBottomSheet<Null>(
+            showBottomSheet<Null>(
                 context: context,
                 builder: (BuildContext context) {
                   return new Container(
                       child: new Padding(
-                          padding: const EdgeInsets.all(32.0),
+                          padding: const EdgeInsets.all(0.0),
                           child: new VideoCamera()));
                 });
           },

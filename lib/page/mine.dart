@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:amap_location/amap_location.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MinePage extends StatelessWidget {
 
@@ -26,11 +28,22 @@ class _PageState extends State<MinePageWidget> with AutomaticKeepAliveClientMixi
   @override
   bool get wantKeepAlive => true;
 
+  AMapLocation _location;
 
   @override
   void initState() {
     super.initState();
 
+    requestPermission();
+    //AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters  ));
+
+  }
+
+  @override
+  void dispose() {
+    //注意这里关闭
+    //AMapLocationClient.shutdown();
+    super.dispose();
   }
 
   Widget _cell(int row, IconData iconData, String title, String describe, bool isShowBottomLine) {
@@ -177,7 +190,9 @@ class _PageState extends State<MinePageWidget> with AutomaticKeepAliveClientMixi
                   new Container(
                     child: new Icon(Icons.keyboard_arrow_right, color: Color(0xFF777777)),
                     margin: new EdgeInsets.only(left: MediaQuery.of(context).size.width/ 2 - 15.0),
-                  )
+                  ),
+
+
                 ],
               ),
             )
@@ -187,8 +202,73 @@ class _PageState extends State<MinePageWidget> with AutomaticKeepAliveClientMixi
     );
   }
 
+
+  //创建一个扫描二维码的方法
+  scan() async {
+    try {
+
+      AMapLocation tlocation = await getLocation();
+      setState(() {
+        _location = tlocation;
+      });
+
+
+
+
+    } catch (e) {
+      print('$e');
+    }
+  }
+
+
+  Future requestPermission() async {
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions =
+    await PermissionHandler().requestPermissions([PermissionGroup.locationAlways]);
+
+    // 申请结果
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.locationAlways);
+
+    if (permission == PermissionStatus.granted) {
+      print("权限申请通过");
+    } else {
+      print("权限申请通过");
+    }
+  }
+
+
+
+  //创建定位的方法
+  Future<AMapLocation> getLocation() async {
+    //先启动定位工具
+    await AMapLocationClient.startup(new AMapLocationOption(
+        desiredAccuracy: CLLocationAccuracy.kCLLocationAccuracyBest));
+    //获取定位
+    AMapLocation location = await AMapLocationClient.getLocation(true);
+    if (location.code == 12) {
+
+      showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('提示'),
+            content: Text('请打开GPS定位按钮'),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.pop(context), child: Text('确定'))
+            ],
+          ));
+
+    }
+    return location;
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    super.build(context); //要点3
+
+
     return new Material(
       child: new Container(
         //color: Colors.black,
@@ -207,10 +287,31 @@ class _PageState extends State<MinePageWidget> with AutomaticKeepAliveClientMixi
             } else if (index == 4) {
               return _spaceView();
             } else if (index == 5) {
-              return _cell(index, Icons.help, "帮助说明", "", true);
+              return new Center(
+                child: _location == null
+                    ? new Text("正在定位")
+                    : new Text("定位成功: 省:${_location.province} 市:${_location.city} 区:${_location.district} 街道:${_location.street} "),
+              );
             }  else if (index == 6) {
-              return _cell(index, Icons.settings, "设置", "", false);
+              return  new SizedBox(
+                  height: 100,
+                  width: 200,
+                  child: RaisedButton(
+                    color: Colors.blue,
+                    onPressed: scan,
+                    highlightColor: Colors.blue[700],
+                    colorBrightness: Brightness.dark,
+                    splashColor: Colors.grey,
+                    child: Text(
+                      '地理位置',
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                    ),
+
+                  ));
             } else {
+
+
+
               return new Container(
                 height: MediaQuery.of(context).size.height,
                 //color: Colors.black,
